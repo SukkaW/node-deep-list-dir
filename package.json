@@ -1,9 +1,13 @@
 {
   "name": "@sukka/listdir",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "description": "Returns a recursive list of all files inside a directory",
   "main": "dist",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc",
     "lint": "eslint --ext .ts --ignore-path .gitignore ./",
     "test": "ts-mocha -p test/tsconfig.json test/index.ts"
   },
