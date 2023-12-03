@@ -2,7 +2,7 @@ import fs from 'fs';
 import { join } from 'path';
 
 interface ListDirOptions {
-  ignoreHidden?: boolean
+  ignoreHidden?: boolean,
   ignorePattern?: RegExp | null
 }
 
@@ -19,7 +19,7 @@ function listDir(path: string, options?: ListDirOptions): Promise<string[]> {
 }
 
 function listDirWalker(path: string, results: string[], parent: string, options: ListDirOptions): Promise<any[]> {
-  const promises: Promise<any[]>[] = [];
+  const promises: Array<Promise<any[]>> = [];
 
   return readAndFilterDir(path, options).then(items => {
     items.forEach(item => {

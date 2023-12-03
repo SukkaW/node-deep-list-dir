@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "noEmit": true,
-    "strict": true,
     "baseUrl": "../",
-    "esModuleInterop": true
+    "noEmit": true,
+    "esModuleInterop": true,
+    "strict": true
   }
 }

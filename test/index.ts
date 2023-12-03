@@ -1,4 +1,3 @@
-import 'ts-mocha';
 import chai from 'chai';
 import { writeFileSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
