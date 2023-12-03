@@ -1,4 +1,5 @@
-import fs from 'fs';
+import { promises as fsp } from 'fs';
+import type fs from 'fs';
 import { join } from 'path';
 
 interface ListDirOptions {
@@ -6,48 +7,46 @@ interface ListDirOptions {
   ignorePattern?: RegExp | null
 }
 
-function listDir(path: string, options?: ListDirOptions): Promise<string[]> {
+function listDir(path: string, options: ListDirOptions = {}): Promise<string[]> {
   const results: string[] = [];
-
-  options = {
-    ignoreHidden: true,
-    ignorePattern: null,
-    ...options
-  };
-
-  return listDirWalker(path, results, '', options).then(() => results);
+  const { ignoreHidden = true, ignorePattern = null } = options;
+  return listDirWalker(path, results, '', ignoreHidden, ignorePattern).then(() => results);
 }
 
-function listDirWalker(path: string, results: string[], parent: string, options: ListDirOptions): Promise<any[]> {
-  const promises: Array<Promise<any[]>> = [];
+type VoidOrVoidArray = void | VoidOrVoidArray[];
 
-  return readAndFilterDir(path, options).then(items => {
-    items.forEach(item => {
+function listDirWalker(path: string, results: string[], parent: string, ignoreHidden: boolean, ignorePattern: RegExp | null): Promise<VoidOrVoidArray> {
+  return readAndFilterDir(path, ignoreHidden, ignorePattern).then(items => {
+    const promises: Array<Promise<VoidOrVoidArray>> = [];
+
+    for (let i = 0, len = items.length; i < len; i++) {
+      const item = items[i];
       const currentPath = join(parent, item.name);
-
       if (item.isDirectory()) {
-        promises.push(listDirWalker(join(path, item.name), results, currentPath, options));
+        promises.push(listDirWalker(join(path, item.name), results, currentPath, ignoreHidden, ignorePattern));
       } else {
         results.push(currentPath);
       }
-    });
-  }).then(() => Promise.all(promises));
+    }
+
+    return Promise.all(promises);
+  });
 }
 
-function readAndFilterDir(path: string, options: ListDirOptions) {
-  const { ignoreHidden = true, ignorePattern } = options;
+async function readAndFilterDir(path: string, ignoreHidden: boolean, ignorePattern: RegExp | null) {
+  const results: fs.Dirent[] = [];
 
-  return fs.promises.readdir(path, { ...options, withFileTypes: true })
-    .then(results => {
-      if (ignoreHidden) {
-        results = results.filter(({ name }) => !name.startsWith('.'));
-      }
-      if (ignorePattern) {
-        results = results.filter(({ name }) => !ignorePattern.test(name));
-      }
+  for await (const item of await fsp.opendir(path)) {
+    if (ignoreHidden && item.name[0] === '.') {
+      continue;
+    }
+    if (ignorePattern && ignorePattern.test(item.name)) {
+      continue;
+    }
+    results.push(item);
+  }
 
-      return results;
-    });
+  return results;
 }
 
 export = listDir;
