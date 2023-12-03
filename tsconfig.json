@@ -3,12 +3,12 @@
     "target": "es2019",
     "module": "commonjs",
     "moduleResolution": "node",
-    "typeRoots": ["@types", "node_modules/@types"],
     "declaration": true,
     "outDir": "./dist",
+    "noEmit": false,
     "esModuleInterop": true,
     "strict": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["dist"]
 }
