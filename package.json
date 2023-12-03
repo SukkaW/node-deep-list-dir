@@ -1,6 +1,6 @@
 {
   "name": "@sukka/listdir",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Returns a recursive list of all files inside a directory",
   "homepage": "https://github.com/SukkaW/node-deep-list-dir#readme",
   "repository": {
